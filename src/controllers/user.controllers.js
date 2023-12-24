@@ -1,13 +1,45 @@
+/* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
+
+const checkIfUserExist = async (user) => {
+  try {
+    const { userName, email, phoneNumber } = user;
+    const userFromDb = await User.findOne({ userName, email, phoneNumber });
+
+    if (userFromDb) {
+      return true;
+    }
+
+    return false;
+  } catch (err) {
+    console.error('CHECKING USER EXISTS: ', err);
+    return null;
+  }
+};
 
 const getUserFromDB = async (userName = '') => {
   try {
     if (userName) {
       // return one
       return await User.findOne({ userName });
+    }
+
+    // return all
+    return await User.find({});
+  } catch (err) {
+    console.error('FETCHING USERS FROM DB: ', err);
+    return {};
+  }
+};
+
+const getUserByIdFromDB = async (id = '') => {
+  try {
+    if (id) {
+      // return one
+      return await User.findOne({ _id: id });
     }
 
     // return all
@@ -20,12 +52,34 @@ const getUserFromDB = async (userName = '') => {
 
 const addUserToDB = async (user) => {
   try {
+    const doesUserExist = await checkIfUserExist(user);
+
+    if (doesUserExist) {
+      console.log('User with the given credentials already exists.');
+      return {};
+    }
+
     const newUser = await User.create(user);
     newUser.save();
 
     return newUser;
   } catch (err) {
     console.error('ADDING USER TO DB: ', err);
+
+    if (err?.errors && Object.keys(err?.errors).includes('phoneNumber')) {
+      return {
+        error: true,
+        type: 'phoneNumber',
+      };
+    }
+
+    if (err?.errors && Object.keys(err?.errors).includes('userName')) {
+      return {
+        error: true,
+        type: 'userName',
+      };
+    }
+
     return {};
   }
 };
@@ -47,6 +101,22 @@ const userSignUp = async (req, res) => {
 
     // Add user to DB
     const newUser = await addUserToDB(body);
+
+    if (newUser?.error && newUser?.type === 'userName') {
+      return res.status(403).json({
+        message: 'An account already exists with this user name.',
+      });
+    }
+    if (newUser?.error && newUser?.type === 'phoneNumber') {
+      return res.status(403).json({
+        message: 'Phone number must be 10 digits long.',
+      });
+    }
+    if (!newUser?.userName) {
+      return res.status(403).json({
+        message: 'An account already exists with this phone number.',
+      });
+    }
 
     // Generate JWT
     const user = {
@@ -103,7 +173,7 @@ const userLogin = async (req, res) => {
 
 const getUser = async (req, res) => {
   try {
-    const user = await getUserFromDB(req.params.id);
+    const user = await getUserByIdFromDB(req.params.id);
 
     return res.status(200).json({
       message: 'Fetched user successfully.',

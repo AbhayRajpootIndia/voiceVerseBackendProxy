@@ -1,10 +1,20 @@
+/* eslint-disable implicit-arrow-linebreak */
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   userName: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  phoneNumber: { type: String, required: true, unique: true },
-  email: { type: String, unique: true },
+  phoneNumber: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator: (v) => v.length === 10, // Validate the length of the phone number
+      message: (props) =>
+        `${props.value} is not a valid phone number. It should be exactly 10 characters long.`,
+    },
+  },
+  email: { type: String },
 
   // Real name of user
   name: {

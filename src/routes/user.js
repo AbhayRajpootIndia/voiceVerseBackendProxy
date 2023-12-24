@@ -10,9 +10,10 @@ userRouter.use((req, res, next) => {
   next();
 });
 
-userRouter.post('/signup', userControllers.userSignUp);
-userRouter.get('/login', userControllers.userLogin);
 userRouter.get('/', userControllers.getAllUsers);
 userRouter.get('/:id', userControllers.getUser);
+
+userRouter.post('/login', userControllers.userLogin);
+userRouter.post('/signup', userControllers.userSignUp);
 
 module.exports = userRouter;
