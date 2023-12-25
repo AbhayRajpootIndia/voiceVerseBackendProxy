@@ -42,3 +42,101 @@ Usage:
 
 4. Start the server using npm start.
 5. Access the API endpoints using your preferred HTTP client (such as Postman).
+
+END-POINTS:
+
+Certainly! Here's a condensed version of the documentation:
+
+---
+
+## API Documentation
+
+### User Endpoints
+
+1. **User Signup**
+   - **Method:** POST
+   - **Endpoint:** `/user/signup`
+   - **Description:** Create a new user account.
+2. **User Login**
+   - **Method:** POST
+   - **Endpoint:** `/user/login`
+   - **Description:** Log in with existing credentials.
+3. **Get User by ID**
+   - **Method:** GET
+   - **Endpoint:** `/user/:id`
+   - **Description:** Fetch user details by ID.
+4. **Get All Users**
+   - **Method:** GET
+   - **Endpoint:** `/user`
+   - **Description:** Retrieve a list of all users.
+
+### Post Endpoints
+
+1. **Post Creation**
+
+   - **Method:** POST
+   - **Endpoint:** `/post`
+   - **Description:** Create a new post.
+
+2. **Post Deletion**
+
+   - **Method:** DELETE
+   - **Endpoint:** `/post`
+   - **Description:** Delete a post by ID.
+
+3. **Post Edit**
+
+   - **Method:** PATCH
+   - **Endpoint:** `/post`
+   - **Description:** Edit a post by ID.
+
+4. **Comment on Post**
+
+   - **Method:** POST
+   - **Endpoint:** `/post/comment`
+   - **Description:** Add a comment to a post.
+
+5. **Remove Comment from Post**
+
+   - **Method:** PATCH
+   - **Endpoint:** `/post/comment`
+   - **Description:** Remove a comment from a post.
+
+6. **Like Post**
+
+   - **Method:** POST
+   - **Endpoint:** `/post/like`
+   - **Description:** Like a post.
+
+7. **Unlike Post**
+
+   - **Method:** PATCH
+   - **Endpoint:** `/post/like`
+   - **Description:** Unlike a post.
+
+8. **Get Post by ID**
+
+   - **Method:** GET
+   - **Endpoint:** `/post/:id`
+   - **Description:** Fetch a post by ID.
+
+9. **Get All Posts**
+
+   - **Method:** GET
+   - **Endpoint:** `/post`
+   - **Description:** Retrieve all posts.
+
+10. **Get All Comments of a Post**
+
+    - **Method:** GET
+    - **Endpoint:** `/post/comment/:postId`
+    - **Description:** Get all comments of a post.
+
+11. **Get All Likes of a Post**
+    - **Method:** GET
+    - **Endpoint:** `/post/like/:postId`
+    - **Description:** Get all likes of a post.
+
+---
+
+This concise documentation provides an overview of each endpoint's purpose and method. You might want to include additional details such as request/response formats or any necessary parameters for clarity.
