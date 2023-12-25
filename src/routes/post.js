@@ -10,11 +10,18 @@ postRouter.use((req, res, next) => {
   next();
 });
 
+postRouter.post('/', postControllers.addPost);
+postRouter.delete('/', postControllers.removePost);
+postRouter.patch('/', postControllers.updatePost);
 postRouter.get('/', postControllers.getAllPosts);
 postRouter.get('/:id', postControllers.getPost);
+
+postRouter.post('/comment/', postControllers.addCommentToPost);
+postRouter.patch('/comment/', postControllers.removeCommentFromPost);
 postRouter.get('/comment/:postId', postControllers.getComments);
 
-postRouter.post('/', postControllers.addPost);
-postRouter.post('/comment/', postControllers.addCommentToPost);
+postRouter.post('/like', postControllers.addLikeToPost);
+postRouter.patch('/like', postControllers.removeLikeFromPost);
+postRouter.get('/like/:postId', postControllers.getLikes);
 
 module.exports = postRouter;
