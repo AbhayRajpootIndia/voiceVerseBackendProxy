@@ -1,8 +1,10 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
 
 const User = require('../models/user');
+const axios = require('axios');
 
 const checkIfUserExist = async (user) => {
   try {
@@ -69,14 +71,14 @@ const addUserToDB = async (user) => {
     if (err?.errors && Object.keys(err?.errors).includes('phoneNumber')) {
       return {
         error: true,
-        type: 'phoneNumber',
+        type: 'phoneNumber'
       };
     }
 
     if (err?.errors && Object.keys(err?.errors).includes('userName')) {
       return {
         error: true,
-        type: 'userName',
+        type: 'userName'
       };
     }
 
@@ -95,7 +97,7 @@ const userSignUp = async (req, res) => {
 
     if (userFromDb) {
       return res.status(403).json({
-        message: 'An account already exists with this user name.',
+        message: 'An account already exists with this user name.'
       });
     }
 
@@ -104,24 +106,24 @@ const userSignUp = async (req, res) => {
 
     if (newUser?.error && newUser?.type === 'userName') {
       return res.status(403).json({
-        message: 'An account already exists with this user name.',
+        message: 'An account already exists with this user name.'
       });
     }
     if (newUser?.error && newUser?.type === 'phoneNumber') {
       return res.status(403).json({
-        message: 'Phone number must be 10 digits long.',
+        message: 'Phone number must be 10 digits long.'
       });
     }
     if (!newUser?.userName) {
       return res.status(403).json({
-        message: 'An account already exists with this phone number.',
+        message: 'An account already exists with this phone number.'
       });
     }
 
     // Generate JWT
     const user = {
       userName,
-      phoneNumber,
+      phoneNumber
     };
 
     const token = jwt.sign(user, process.env.SECRET, { expiresIn: '1h' });
@@ -129,7 +131,7 @@ const userSignUp = async (req, res) => {
     return res.status(200).json({
       message: 'Signed Up Succesfully',
       user: newUser,
-      token,
+      token
     });
   }
 
@@ -146,7 +148,7 @@ const userLogin = async (req, res) => {
 
     if (user?.password !== password) {
       return res.status(403).json({
-        message: 'Invalid username or password.',
+        message: 'Invalid username or password.'
       });
     }
 
@@ -154,17 +156,17 @@ const userLogin = async (req, res) => {
 
     const userObj = {
       userName: user?.userName,
-      phoneNumber: user?.phoneNumber,
+      phoneNumber: user?.phoneNumber
     };
 
     const token = jwt.sign(userObj, process.env.SECRET, {
-      expiresIn: '1h',
+      expiresIn: '1h'
     });
 
     return res.status(200).json({
       message: 'Logged In Succesfully',
       user,
-      token,
+      token
     });
   }
 
@@ -177,32 +179,72 @@ const getUser = async (req, res) => {
 
     return res.status(200).json({
       message: 'Fetched user successfully.',
-      user,
+      user
     });
   } catch (error) {
     console.error('GET USER: ', error);
 
     return res.status(500).json({
       message: 'There was an error while fetching the users.',
-      error,
+      error
     });
   }
 };
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await getUserFromDB();
+    if (!req.file) {
+      return res.status(400).send('No files were uploaded.');
+    }
+
+    // File information
+    const fileInfo = {
+      originalName: req.file.originalname,
+      fileName: req.file.filename,
+      filePath: req.file.path,
+      fileType: req.file.mimetype,
+      fileSize: req.file.size
+    };
+
+    const fileObj = new Blob(
+      [fs.readFileSync(fileInfo.filePath, (err) => err && console.error(err))],
+      {
+        type: fileInfo.fileType
+      }
+    );
+
+    const formData = new FormData();
+
+    formData.set('file', fileObj, fileInfo.fileName);
+
+    const requestOptions = {
+      method: 'POST',
+      body: formData,
+      redirect: 'follow'
+    };
+
+    let emotionsData = {};
+
+    await fetch('http://127.0.0.1:5000/extract_emotion', requestOptions)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        emotionsData = data;
+      })
+      .catch((error) => console.log(error));
+
+    console.log('emotionsData', emotionsData);
 
     return res.status(200).json({
-      message: 'Fetched users successfully.',
-      users,
+      message: 'Succesful',
+      emotionsData: emotionsData
     });
   } catch (error) {
     console.error('GET ALL USERS: ', error);
 
     return res.status(500).json({
       message: 'There was an error while fetching the users.',
-      error,
+      error
     });
   }
 };
@@ -211,5 +253,5 @@ module.exports = {
   userSignUp,
   userLogin,
   getUser,
-  getAllUsers,
+  getAllUsers
 };
