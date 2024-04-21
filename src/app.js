@@ -14,5 +14,10 @@ app.use(express.json());
 // Routes
 app.use(`${VERSION}/user`, userRouter);
 app.use(`${VERSION}/post`, postRouter);
+app.get(`${VERSION}/welcome`, async (req, res) => {
+  return res.status(200).json({
+    message: 'welcome'
+  });
+});
 
 module.exports = app;

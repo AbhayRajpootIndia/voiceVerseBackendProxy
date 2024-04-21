@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     // Set the filename as current date/time plus original file extension
     cb(null, Date.now() + '-' + file.originalname);
-  },
+  }
 });
 
 const upload = multer({ storage: storage });
@@ -27,6 +27,7 @@ userRouter.use((req, res, next) => {
 
 userRouter.post('/', upload.single('file'), userControllers.getAllUsers);
 userRouter.get('/:id', userControllers.getUser);
+userRouter.get('/welcome', userControllers.welcome);
 
 userRouter.post('/login', userControllers.userLogin);
 userRouter.post('/signup', userControllers.userSignUp);
